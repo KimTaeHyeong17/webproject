@@ -1,12 +1,18 @@
-
+# DBMasterSpringBoot
+https://markdownlivepreview.com/
 # 디비 마스터 api 문서
 
 ----
 ## 디비 마스터란?
 see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?version=latest#db69b269-bcc0-4e06-84e7-8105c07ad8b9)
 
-> 데이터 베이스가 필요하지만 서버개발의 공수를 줄이고 싶은 해커톤 또는 토이 프로젝트를 위한 디비 호스팅 서비스 입니다. MySQL을 지원하며 회원 가입 후 최대 10개의 원하는 Column 정보를 가지는 Table를 만들어 Android Library나 RESTful API 로 사용하실 수 있습니다.
----
+> Markdown is a lightweight markup language, originally created by John Gruber and Aaron Swartz allowing people "to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML)".
+
+----
+## postman 으로 테스트하려면
+1. Write markdown text in this textarea.
+2. Click 'HTML Preview' button.
+----
 ## changelog
 * 2020.05.10 첫 등록
 * 2020.05.13 테이블 정보찾기 api 리스폰스 수정 // 테이블 데이터 Update 항목 추가 // 테이블 데이터 Delete 항목 추가
@@ -16,7 +22,10 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 * 2020.05.25 테이블 내 데이터 검색 api 추가, 사용자 지정 SELECT 쿼리문 처리 api 추가
 * 2020.05.28 테이블 정보 받아오기 api 수정, 테이블 데이터 csv 파일 export api 추가
 * 2020.05.30 비밀번호 수정 api 추가, 테이블 Join api 추가
-* 2020.06.01 특정 칼럼 기준 정렬 api 추가,
+* 2020.06.01 특정 칼럼 기준 정렬 api 추가
+* 2020.06.07 특정 테이블 외래키 추가 api 추가
+* 2020.06.13 회원가입 api 에러코드 수정, INSERT api 에러코드 수정, 테이블 데이터 전부 불러오기 에러코드 수정, 칼럼 업데이트 에러코드 수정
+* 2020.06.20 테이블 데이터 delete 응답코드 추가, 테이블 DROP 응답코드 추가, Rename API 응답코드 추가
 ----
 ## 목차
 * [회원가입 api](#회원가입-api)
@@ -36,10 +45,11 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 * [사용자 이메일 인증 확인 API](#사용자-이메일-인증-확인-api)
 * [테이블 내 데이터 검색 API](#테이블-내-데이터-검색-api)
 * [사용자 지정 SELECT 쿼리문 API](#사용자-지정-select-쿼리문-api)
-* [테이블 데이터 csv 파일로 export API](#테이블-데이터-csv-파이로-export-api)
+* [테이블 데이터 csv 파일로 export API](#테이블-데이터-csv-파일로-export-api)
 * [비밀번호 수정 API](#비밀번호-수정-api)
 * [테이블 JOIN API](#테이블-join-api)
 * [특정 칼럼 기준 정렬 API](#특정-칼럼-기준-정렬-api)
+* [특정 테이블 외래키 추가 API](#특정-테이블-외래키-추가-api)
 
 ----
 ## 회원가입 api
@@ -62,13 +72,47 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
     "value": ""
     }
 
->error
+>error E01 아이디 중복
 
     {
-    "result": "E01",
-    "message": "java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'test123' for key 'PRIMARY'",
+        "result": "E01",
+        "message": "test 은 아이디로 사용하실 수 없습니다.",
+        "value": ""
+    }
+    
+>error E02 아이디 미입력
+
+    {
+    "result": "E02",
+    "message": "아이디가 입력되지 않았습니다.",
     "value": ""
     }
+    
+>error E03 비밀번호 미입력
+
+    {
+    "result": "E03",
+    "message": "비밀번호가 입력되지 않았습니다.",
+    "value": ""
+    }
+    
+>error E04 SQL 문법 오류
+    
+    {
+        "result": "E04",
+        "message": "SQL 문법 오류입니다. 특수문자를 사용하지 마세요.",
+        "value": ""
+    }
+    
+>error E05 확인되지 않는 SQL 오류
+    
+    {
+        "result": "E05",
+        "message": "확인되지 않은 SQL 오류입니다.",
+        "value": ""
+    }
+
+>error E03 비밀번호 미입력
 
 ----
 ## 아이디 중복검사 api
@@ -229,11 +273,34 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 >error
 
     {
-    "timestamp": "2020-05-10T02:45:43.846+0000",
-    "status": 500,
-    "error": "Internal Server Error",
-    "message": "StatementCallback; SQL [INSERT INTO uuzaza.test1 VALUES(10, '테스트3');]; Duplicate entry '10' for key 'PRIMARY'; nested exception is java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '10' for key 'PRIMARY'",
-    "path": "/dbmasterspringboot-1.0/v1/table/insert"
+        "result": "E01",
+        "message": "테이블을 입력하지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E02",
+        "message": "데이터베이스 이름을 입력하지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E03",
+        "message": "입력할 데이터가 비어있습니다.",
+        "value": ""
+    }
+    {
+        "result": "E04",
+        "message": "SQL 문법 오류입니다.",
+        "value": "org.springframework.jdbc.BadSqlGrammarException: StatementCallback; bad SQL grammar [INSERT INTO test.tableB VALUES(33,201723332, '01022993322', 'testname', 'addressexample');]; nested exception is java.sql.SQLException: Column count doesn't match value count at row 1"
+    }
+    {
+        "result": "E05",
+        "message": "입력된 데이터 타입이 칼럼 타입과 다릅니다.",
+        "value": ""
+    }
+    {
+        "result": "E06",
+        "message": "이미 입력된 데이터 입니다.",
+        "value": ""
     }
 
 ----
@@ -362,9 +429,24 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 >error
 
     {
+    "result": "E01",
+    "message": "테이블을 입력하지 않았습니다.",
+    "value": ""
+    }
+    {
     "result": "E02",
-    "message": "java.sql.SQLSyntaxErrorException: Table 'uuzaz3a.test1' doesn't exist",
-    "value": null
+    "message": "데이터베이스 이름을 입력하지 않았습니다.",
+    "value": ""
+    }
+    {
+        "result": "E03",
+        "message": "테이블이 존재하지 않습니다.",
+        "value": ""
+    }
+    {
+       "result": "E04",
+       "message": "SQL 문법 오류입니다.",
+       "value": "java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?3##!! 3242.testTable!!' at line 1"
     }
 ----
 
@@ -407,9 +489,44 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 >error
 
     {
-    "result": "E01",
-    "message": "java.sql.SQLSyntaxErrorException: Unknown column '업데이트적용' in 'field list'",
-    "value": ""
+        "result": "E01",
+        "message": "데이터 베이스 이름을 입력하지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E02",
+        "message": "테이블 이름을 입력하지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E03",
+        "message": "Primary Key를 입력하지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E04",
+        "message": "Primary Key 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E05",
+        "message": "업데이트할 column 이름이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E06",
+        "message": "업데이트할 column의 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E07",
+        "message": "테이블이 존재하지 않습니다.",
+        "value": ""
+    }
+    {
+        "result": "E08",
+        "message": "SQL 문법 오류입니다.",
+        "value": "org.springframework.jdbc.BadSqlGrammarException: StatementCallback; bad SQL grammar [UPDATE test!.tableA SET name = 업데이트적용 WHERE sno = 1;]; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '!.tableA SET name = 업데이트적용 WHERE sno = 1' at line 1"
     }
     
     ----
@@ -441,18 +558,45 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 >response
 
     {
-    "result": "S01",
-    "message": "",
-    "value": ""
+        "result": "S01",
+        "message": "삭제되었습니다.",
+        "value": ""
     }
 
 >error
 
     {
-    "result": "E01",
-    "message": "java.sql.SQLSyntaxErrorException: Unknown column 'sno3' in 'where clause'",
-    "value": ""
+        "result": "E01",
+        "message": "tableName 값이 입력되지 않았습니다.",
+        "value": ""
     }
+    {
+        "result": "E02",
+        "message": "name 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E03",
+        "message": "primary_key_name 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E04",
+        "message": "primary_key_value 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E05",
+        "message": "테이블이 존재하지 않습니다.",
+        "value": ""
+    }
+    {
+        "result": "E06",
+        "message": "칼럼이 존재하지 않습니다.",
+        "value": ""
+    }
+    
+    
 ----
 
 ## 테이블 DROP api
@@ -479,14 +623,24 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 
     {
     "result": "S01",
-    "message": "",
+    "message": "테이블이 삭제되었습니다.",
     "value": ""
     }
 
 >error
 
     {
-    "result": "E01",
+        "result": "E01",
+        "message": "tableName 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E02",
+        "message": "name 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+    "result": "E03",
     "message": "java.sql.SQLSyntaxErrorException: Unknown table 'DropTableTesttingHolyShitWhattheFuck'",
     "value": ""
     }
@@ -527,9 +681,31 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
 
     {
     "result": "E01",
-    "message": "java.sql.SQLSyntaxErrorException: Table 'test.test2Table' doesn't exist",
+    "message": "tableName 값이 입력되지 않았습니다.",
     "value": ""
     }
+    {
+        "result": "E02",
+        "message": "name 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E03",
+        "message": "newName 값이 입력되지 않았습니다.",
+        "value": ""
+    }
+    {
+        "result": "E04",
+        "message": "테이블 또는 데이터베이스가 존재하지 않습니다.",
+        "value": ""
+    }
+    {
+        "result": "E05",
+        "message": "java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 1",
+        "value": ""
+    }
+    
+    
     
  ---
  ## 테이블 이름 중복검사 api
@@ -680,6 +856,32 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
             "message": "java.sql.SQLSyntaxErrorException: Table 'test2.testTable' doesn't exist",
             "value": null
         }
+        {
+            "result": "E01",
+            "message": "name 값이 입력되지 않았습니다.",
+            "value": ""
+        }
+        {
+            "result": "E02",
+            "message": "tableName 값이 입력되지 않았습니다.",
+            "value": ""
+        }
+        {
+            "result": "E03",
+            "message": "keyword 값이 입력되지 않았습니다.",
+            "value": ""
+        }
+        {
+            "result": "E04",
+            "message": "테이블 또는 데이터베이스가 존재하지 않습니다.",
+            "value": ""
+        }
+        {
+            "result": "E05",
+            "message": "java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '!.tableB' at line 1",
+            "value": null
+        }
+        
 ---
 ## 사용자 지정 SELECT 쿼리문 API
 * api 종류 : post
@@ -717,9 +919,29 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
     >error
 
         {
+            "result": "E01",
+            "message": "name 값이 입력되지 않았습니다.",
+            "value": ""
+        }
+        {
             "result": "E02",
-            "message": "java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '2' at line 1",
-            "value": null
+            "message": "tableName 값이 입력되지 않았습니다.",
+            "value": ""
+        }
+        {
+            "result": "E03",
+            "message": "query 값이 입력되지 않았습니다.",
+            "value": ""
+        }
+        {
+            "result": "E04",
+            "message": "테이블 또는 데이터베이스가 존재하지 않습니다.",
+            "value": ""
+        }
+        {
+            "result": "E05",
+            "message": "SQL 문법 오류",
+            "value": "java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '!' at line 1"
         }
 ---
    ## 테이블 데이터 csv 파일로 export API
@@ -976,8 +1198,90 @@ see [postman link](https://documenter.getpostman.com/view/5249380/Szmcaz3f?versi
                "message": "java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'DESCa' at line 1",
                "value": null
            }
+           
+           
    ---
+   ## 특정 테이블 외래키 추가 API
+   * api 종류 : post
+   * 주소 : /v1/table/set-foreign
+   *두개의 테이블을 입력받아 테이블 간 외래키 관계를 추가해 준다..*
+
+   **input data**
+
+   * name : String(필수)
+   * tableName : String(필수)
+   * baseColumn : String(필수)
+   * targetTable : String(필수)
+   * targetColumn : String(필수) 
+
+
+       >예시 input "ALTER TABLE test.tableA ADD FOREIGN KEY (id) REFERENCES test.tableB(id)"
+
+               {
+                   "name" : "test",
+                   "tableName" : "tableA",
+                   "baseColumn" : "id",
+                   "targetTable" : "tableB",
+                   "targetColumn" : "id"
+               }
+
+
+
+
+
+       >response
+
+               {
+                   "result": "S01",
+                   "message": "",
+                   "value": ""
+               }
+
+       >error
+
+           {
+               "result": "E01",
+               "message": "java.sql.SQLException: Can't create table 'test.#sql-14f3_c9a4' (errno: 150)",
+               "value": ""
+           }
+           
+---
+-
+## 특정 테이블 외래키 정보 조회 API
+* api 종류 : post
+* 주소 : /v1/table/get-foreign
+*특정 테이블에 있는 외래키 정보를 받아온다.*
+
+**input data**
+
+* name : String(필수)
+* tableName : String(필수)
+
+
+
+    >예시 input
+
+            {
+                "name" : "test",
+                "tableName" : "tableB"
+            }
+
+    >response
+
+            {
+                "result": "S01",
+                "message": "tableA 의 id 칼럼과 외래키 관계임니다.",
+                "value": ""
+            }
+
+    >error
+
+        {
+            "result": "E01",
+            "message": "외래키가 없습니다.",
+            "value": ""
+        }
+        
 ## thanks
 * [markdown-js](https://github.com/evilstreak/markdown-js)
-
 
